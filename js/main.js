@@ -221,15 +221,19 @@ async function createNewGroup(e) {
         alert("Convidados podem apenas visualizar conteúdo. Crie uma conta para criar seus próprios grupos!");
         return;
     }
+
+    const name = document.getElementById('new-group-name').value;
     const desc = document.getElementById('new-group-desc').value;
 
     try {
         await addDoc(collection(db, "groups"), {
             name: name,
             description: desc,
-            members: 1,
-            createdBy: currentUser.uid,
-            createdAt: serverTimestamp()
+            createdAt: serverTimestamp(),
+            owner: currentUser.uid, // Mantendo UID para referência simples no Firestore
+            imageUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${name}`,
+            isPrivate: false,
+            members: 1
         });
 
         closeGroupModal();
@@ -303,7 +307,7 @@ function renderChatList() {
     if (!list) return;
 
     list.innerHTML = chatData[activeTab].map(item => `
-        <div class="chat-item" onclick="openChat(${item.id}, '${activeTab}')">
+        <div class="chat-item" onclick="openChat('${item.id}', '${activeTab}')">
             <img src="${item.avatar}" alt="${item.name}">
             <div class="chat-item-info">
                 <div class="chat-item-name">
@@ -331,14 +335,25 @@ function renderMessages() {
     if (!container || !activeChat) return;
 
     const chatMessages = messages.filter(m => m.chatId === activeChat.id);
-    container.innerHTML = chatMessages.map(m => `
-        <div class="message ${m.type}">
-            ${m.text}
-            <div style="font-size: 10px; opacity: 0.5; margin-top: 4px; text-align: right;">
-                ${m.type === 'sent' ? '✓✓ Visualizado' : ''}
+    container.innerHTML = chatMessages.map(m => {
+        const isSent = m.senderId === currentUser?.uid;
+        const msgClass = isSent ? 'sent' : 'received';
+        const content = m.content || m.text || ''; // Fallback para compatibilidade
+        
+        return `
+            <div class="message ${msgClass}">
+                <div class="message-info">
+                    <span class="message-sender">${isSent ? 'Você' : m.senderName}</span>
+                </div>
+                <div class="message-bubble">
+                    ${content}
+                </div>
+                <div style="font-size: 10px; opacity: 0.5; margin-top: 4px; text-align: right;">
+                    ${isSent ? '✓✓ Visualizado' : ''}
+                </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
     container.scrollTop = container.scrollHeight;
 }
 
@@ -349,13 +364,15 @@ async function sendMessage(chatId, text) {
         alert("Atenção: Visitantes podem ler mensagens, mas precisam de uma conta para participar da conversa.");
         return;
     }
+
+    try {
         await addDoc(collection(db, "messages"), {
             chatId: chatId,
-            text: text,
+            content: text, // Seguindo seu esquema: 'content' em vez de 'text'
             senderId: currentUser.uid,
             senderName: currentUser.displayName || 'Anônimo',
-            type: 'sent',
-            timestamp: serverTimestamp()
+            sentAt: serverTimestamp(), // Seguindo seu esquema: 'sentAt' em vez de 'timestamp'
+            type: 'sent'
         });
     } catch (error) {
         console.error("Erro ao enviar mensagem:", error);
@@ -383,8 +400,8 @@ function initFirestoreListeners() {
         render();
     });
 
-    // Escuta Mensagens
-    const qMessages = query(collection(db, "messages"), orderBy("timestamp", "asc"));
+    // Escuta Mensagens (Seguindo o novo esquema: sentAt em vez de timestamp)
+    const qMessages = query(collection(db, "messages"), orderBy("sentAt", "asc"));
     onSnapshot(qMessages, (snapshot) => {
         messages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         if (activeChat) renderMessages();
