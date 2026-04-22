@@ -400,14 +400,6 @@ function initNavigation() {
             switchView(link.dataset.view);
         }
     });
-
-    // Checkout form
-    const paymentForm = document.getElementById('payment-form');
-    paymentForm?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        alert('Pagamento processado com sucesso! Bem-vindo ao programa.');
-        switchView('groups');
-    });
 }
 
 /**
@@ -430,7 +422,7 @@ function renderPrograms() {
             <div class="program-info">
                 <span class="program-tag">${p.tag}</span>
                 <h3>${p.title}</h3>
-                <button class="btn-outline full-width" style="margin-top: 16px;" onclick="switchView('checkout')">Assinar Agora</button>
+                <button class="btn-outline full-width" style="margin-top: 16px;" onclick="switchView('not-implemented')">Acessar Programa</button>
             </div>
         </div>
     `).join('');

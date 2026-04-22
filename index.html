@@ -57,19 +57,14 @@
                 <ul class="nav-list" id="main-nav-list">
                     <li><a href="#" data-view="home">Home</a></li>
                     <li><a href="#" data-view="programs">Lista de programas</a></li>
-                    <li><a href="#" data-view="not-implemented">Página de pagamento</a></li>
                     <li><a href="#" data-view="not-implemented">Participant Page</a></li>
                     <li><a href="#" data-view="not-implemented">Página de visitante</a></li>
                     <li><a href="#" data-view="not-implemented">Página de categoria</a></li>
                     <li><a href="#" data-view="not-implemented">Loja</a></li>
                     <li><a href="#" data-view="not-implemented">Página do carrinho</a></li>
                     <li><a href="#" data-view="not-implemented">Página de agradecimento</a></li>
-                    <li><a href="#" data-view="checkout">Checkout</a></li>
-                    <li><a href="#" data-view="not-implemented">Meus programas</a></li>
-                    <li><a href="#" data-view="not-implemented">Notifications</a></li>
                     <li><a href="#" data-view="not-implemented">Blog</a></li>
                     <li><a href="#" data-view="not-implemented">Post</a></li>
-                    <li><a href="#" data-view="not-implemented">Meus pedidos</a></li>
                     <li><a href="#" data-view="not-implemented">Eventos</a></li>
                     <li><a href="#" data-view="not-implemented">Informações do evento e registro</a></li>
                     <li><a href="#" data-view="not-implemented">Programação</a></li>
@@ -82,19 +77,12 @@
                     <li><a href="#" data-view="not-implemented">Formulário de agendamento</a></li>
                     <li><a href="#" data-view="not-implemented">My Bookings</a></li>
                     <li><a href="#" data-view="not-implemented">Página de portfólio</a></li>
-                    <li><a href="#" data-view="not-implemented">Planos e preços</a></li>
                     <li><a href="#" data-view="not-implemented">Agradecimento</a></li>
-                    <li><a href="#" data-view="not-implemented">Personalização do plano</a></li>
-                    <li><a href="#" data-view="not-implemented">Paywall</a></li>
-                    <li><a href="#" data-view="not-implemented">Minhas assinaturas</a></li>
+                    <li><a href="#" data-view="not-implemented">Eventos</a></li>
                 </ul>
             </nav>
 
             <div class="header-right">
-                <div class="cart-link">
-                    <i data-lucide="shopping-cart"></i>
-                    <span>Carrinho</span>
-                </div>
                 <div class="user-profile hidden" id="user-profile" style="display: flex; align-items: center; gap: 12px;">
                     <button onclick="logout()" class="btn-text" style="font-size: 12px; color: var(--text-secondary); cursor: pointer;">Sair</button>
                     <div class="user-avatar" onclick="switchView('settings')" style="cursor: pointer;">
@@ -155,23 +143,6 @@
             </div>
         </div>
 
-        <!-- View: Checkout -->
-        <div id="view-checkout" class="view hidden">
-            <div class="checkout-container">
-                <div class="checkout-form">
-                    <h2>Finalizar Pagamento</h2>
-                    <form id="payment-form">
-                        <input type="text" placeholder="Nome no Cartão" required>
-                        <input type="text" placeholder="0000 0000 0000 0000" required>
-                        <div style="display:flex; gap: 10px;">
-                            <input type="text" placeholder="MM/AA" required>
-                            <input type="text" placeholder="CVV" required>
-                        </div>
-                        <button type="submit" class="btn-primary full-width">Pagar Agora</button>
-                    </form>
-                </div>
-            </div>
-        </div>
 
         <!-- View: Settings -->
         <div id="view-settings" class="view hidden">
