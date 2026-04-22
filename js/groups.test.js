@@ -3,6 +3,13 @@
  * "The only way to be sure is to test with elegance."
  */
 
+// Mock do localStorage para ambiente Node.js
+global.localStorage = {
+    getItem: (key) => null,
+    setItem: (key, val) => {},
+    removeItem: (key) => {}
+};
+
 const { groupsData, toggleJoin, messages, sendMessage, chatData, handleLogin, currentUser, switchView, createNewGroup, saveProfile } = require('./main.js');
 
 // Configuração básica do Runner
@@ -67,8 +74,8 @@ global.window = {
 
 describe("Comunidade MindStack: Lógica de Grupos", () => {
     
-    test("Deve iniciar com dados de teste carregados", () => {
-        expect(groupsData.length).toBe(6);
+    test("Deve iniciar sem nenhum grupo (estado limpo)", () => {
+        expect(groupsData.length).toBe(0);
     });
 
     test("Deve permitir a entrada em um grupo (toggleJoin)", () => {

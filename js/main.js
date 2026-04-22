@@ -1,94 +1,18 @@
-// Mock de dados para Grupos
-const groupsData = [
-    {
-        id: 1,
-        name: "Mindset Evolution",
-        description: "Explore as fronteiras da mente e aprenda técnicas avançadas de alta performance e foco.",
-        members: 1240,
-        joined: false
-    },
-    {
-        id: 2,
-        name: "Desenvolvedores Stack",
-        description: "Comunidade focada em tecnologias modernas, arquitetura de software e carreira tech.",
-        members: 850,
-        joined: true
-    },
-    {
-        id: 3,
-        name: "Marketing Digital 2026",
-        description: "Estratégias de lançamento, tráfego pago e automação com inteligência artificial.",
-        members: 3100,
-        joined: false
-    },
-    {
-        id: 4,
-        name: "Saúde & Biohacking",
-        description: "Discussões sobre otimização biológica, sono, dieta e longevidade para empreendedores.",
-        members: 420,
-        joined: false
-    },
-    {
-        id: 5,
-        name: "Liderança Criativa",
-        description: "Desenvolva habilidades de gestão de pessoas e cultura organizacional em ambientes dinâmicos.",
-        members: 920,
-        joined: false
-    },
-    {
-        id: 6,
-        name: "Investimentos & Crypto",
-        description: "Análise de mercado, teses de investimento e o futuro das finanças descentralizadas.",
-        members: 5600,
-        joined: true
-    }
-];
+// Dados reais (Iniciam vazios para serem populados por usuários)
+let groupsData = JSON.parse(localStorage.getItem('mindstack_groups')) || [];
+let feedData = []; // Feed dinâmico (postagens recentes)
 
-// Mock de dados para Feed
-const feedData = [
-    {
-        id: 101,
-        user: "Ana Silva",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ana",
-        content: "Acabei de finalizar o módulo de React Avançado! Que jornada incrível.",
-        time: "Há 5 min"
-    },
-    {
-        id: 102,
-        user: "Carlos Mendes",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos",
-        content: "Alguém para discutir a nova atualização do Next.js?",
-        time: "Há 12 min"
-    },
-    {
-        id: 103,
-        user: "Juliana Costa",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Juliana",
-        content: "O meetup de ontem sobre IA foi transformador. Recomendo a todos!",
-        time: "Há 45 min"
-    }
-];
-
-// Mock de Chat
-const chatData = {
-    group: [
-        { id: 201, name: "Mindset Evolution", lastMsg: "Sejam bem-vindos!", time: "10:30", avatar: "https://api.dicebear.com/7.x/initials/svg?seed=ME" },
-        { id: 202, name: "Desenvolvedores Stack", lastMsg: "Viram o novo framework?", time: "09:45", avatar: "https://api.dicebear.com/7.x/initials/svg?seed=DS" }
-    ],
-    direct: [
-        { id: 301, name: "Ana Silva", lastMsg: "Oi, tudo bem?", time: "Ontem", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ana" },
-        { id: 302, name: "Carlos Mendes", lastMsg: "Valeu pela ajuda!", time: "2 dias", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos" }
-    ]
+// Mock de Canais do Chat (Apenas estruturas, sem mensagens)
+let chatData = {
+    group: [],
+    direct: []
 };
 
-let messages = [
-    { chatId: 201, text: "Olá grupo!", type: "received" },
-    { chatId: 201, text: "Sejam bem-vindos!", type: "received" },
-];
+let messages = JSON.parse(localStorage.getItem('mindstack_messages')) || [];
 
 let activeChat = null;
 let activeTab = 'group';
-let currentUser = null;
+let currentUser = JSON.parse(localStorage.getItem('mindstack_user')) || null;
 
 /**
  * Função para criar o HTML de um card de grupo
@@ -153,24 +77,24 @@ function initAuth() {
 function handleLogin(method) {
     console.log(`Logando com ${method}...`);
     
-    // Simulação de delay de rede
-    const btn = event?.currentTarget;
-    if (btn) btn.style.opacity = '0.5';
-
     setTimeout(() => {
         currentUser = {
-            name: "Diogo Santos",
-            email: "diogo@mindstack.ai",
+            name: "Usuário MindStack",
+            email: "user@mindstack.ai",
             method: method,
-            avatar: method === 'GitHub' ? "https://github.com/ninosantos-code.png" : "https://api.dicebear.com/7.x/avataaars/svg?seed=Diogo"
+            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${Math.random()}`
         };
 
+        // Persiste no localStorage
+        localStorage.setItem('mindstack_user', JSON.stringify(currentUser));
         completeLogin();
-    }, 1000);
+    }, 800);
 }
 
 function completeLogin() {
-    // Esconde o modal
+    if (!currentUser) return;
+
+    // Esconde o modal e remove overlay
     document.getElementById('auth-overlay').classList.remove('active');
     
     // Atualiza o Header
@@ -178,13 +102,18 @@ function completeLogin() {
     document.getElementById('header-cta').innerText = 'Dashboard';
     document.getElementById('nav-avatar').src = currentUser.avatar;
 
-    // Atualiza campos de settings com dados do usuário
+    // Atualiza campos de settings
     const nameInput = document.getElementById('settings-name');
     const emailInput = document.getElementById('settings-email');
     if (nameInput) nameInput.value = currentUser.name;
     if (emailInput) emailInput.value = currentUser.email;
 
-    alert(`Bem-vindo, ${currentUser.name}! Autenticado via ${currentUser.method}.`);
+    render();
+}
+
+function logout() {
+    localStorage.removeItem('mindstack_user');
+    location.reload();
 }
 
 /**
@@ -222,17 +151,29 @@ function createNewGroup(e) {
     const desc = document.getElementById('new-group-desc').value;
 
     const newGroup = {
-        id: groupsData.length + 1,
+        id: Date.now(),
         name: name,
         description: desc,
         members: 1,
         joined: true
     };
 
-    groupsData.unshift(newGroup); // Adiciona no início
+    groupsData.unshift(newGroup);
+    
+    // Salva grupos no localStorage
+    localStorage.setItem('mindstack_groups', JSON.stringify(groupsData));
+    
+    // Adiciona ao chatData para ser funcional imediatamente
+    chatData.group.push({
+        id: newGroup.id,
+        name: newGroup.name,
+        lastMsg: "Grupo criado agora",
+        time: "Agora",
+        avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${newGroup.name}`
+    });
+
     closeGroupModal();
     render();
-    alert(`Grupo "${name}" criado com sucesso!`);
 }
 
 /**
@@ -338,14 +279,13 @@ function renderMessages() {
 }
 
 function sendMessage(chatId, text) {
-    messages.push({ chatId, text, type: 'sent' });
-    renderMessages();
+    const newMsg = { chatId, text, type: 'sent' };
+    messages.push(newMsg);
     
-    // Simulação de Resposta
-    setTimeout(() => {
-        messages.push({ chatId, text: "Obrigado pela mensagem! Em breve te respondo.", type: 'received' });
-        renderMessages();
-    }, 1000);
+    // Persiste mensagens
+    localStorage.setItem('mindstack_messages', JSON.stringify(messages));
+    
+    renderMessages();
 }
 
 /**
@@ -356,11 +296,30 @@ function render() {
     const feedContainer = document.getElementById('recent-feed');
 
     if (groupsContainer) {
-        groupsContainer.innerHTML = groupsData.map(createGroupCard).join('');
+        if (groupsData.length === 0) {
+            groupsContainer.innerHTML = `
+                <div style="grid-column: 1/-1; text-align: center; padding: 60px; background: white; border-radius: 20px; border: 2px dashed var(--border);">
+                    <i data-lucide="users" style="width: 48px; height: 48px; color: var(--border); margin-bottom: 16px;"></i>
+                    <h3 style="color: var(--text-secondary);">Nenhum grupo ainda</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 24px;">Seja o primeiro a criar uma comunidade incrível!</p>
+                    <button class="btn-primary" onclick="openGroupModal()">Criar meu primeiro Grupo</button>
+                </div>
+            `;
+        } else {
+            groupsContainer.innerHTML = groupsData.map(createGroupCard).join('');
+        }
     }
 
     if (feedContainer) {
-        feedContainer.innerHTML = feedData.map(createFeedItem).join('');
+        if (feedData.length === 0) {
+            feedContainer.innerHTML = `
+                <div style="text-align: center; color: var(--text-secondary); padding: 20px; font-size: 14px;">
+                    Nenhuma atividade recente.
+                </div>
+            `;
+        } else {
+            feedContainer.innerHTML = feedData.map(createFeedItem).join('');
+        }
     }
 
     // Inicializa Chat se presente
@@ -463,6 +422,14 @@ function renderPrograms() {
 
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
+        // Verifica se já está logado
+        if (currentUser) {
+            completeLogin();
+        } else {
+            // Se não logado e não está na home, força login modal
+            document.getElementById('auth-overlay').classList.add('active');
+        }
+
         render();
         initChat();
         initAuth();
