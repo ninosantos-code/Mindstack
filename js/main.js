@@ -60,13 +60,7 @@ function initAuth() {
     const emailForm = document.getElementById('login-email-form');
     const headerCta = document.getElementById('header-cta');
 
-    // Autenticação Real com Google
-    initGoogleAuth();
-    
-    googleBtn?.addEventListener('click', () => {
-        google.accounts.id.prompt(); // Abre o popup real do Google
-    });
-
+    googleBtn?.addEventListener('click', () => handleLogin('Google', googleBtn));
     githubBtn?.addEventListener('click', () => handleLogin('GitHub', githubBtn));
     emailForm?.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -78,48 +72,10 @@ function initAuth() {
         if (!currentUser) {
             document.getElementById('auth-overlay').classList.add('active');
         } else {
+            // Se logado, o CTA pode levar para uma view específica
             switchView('groups');
         }
     });
-}
-
-/**
- * Google Identity Services Integration
- */
-function initGoogleAuth() {
-    if (typeof google === 'undefined') return;
-
-    google.accounts.id.initialize({
-        client_id: "SEU_CLIENT_ID_AQUI.apps.googleusercontent.com", // Substituir pelo real
-        callback: handleGoogleResponse,
-        cancel_on_tap_outside: false
-    });
-}
-
-function handleGoogleResponse(response) {
-    // Decodifica o payload do JWT retornado pelo Google
-    const payload = decodeJwt(response.credential);
-    
-    currentUser = {
-        name: payload.name,
-        email: payload.email,
-        method: 'Google',
-        avatar: payload.picture,
-        googleId: payload.sub
-    };
-
-    localStorage.setItem('mindstack_user', JSON.stringify(currentUser));
-    completeLogin();
-}
-
-function decodeJwt(token) {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-
-    return JSON.parse(jsonPayload);
 }
 
 function handleLogin(method, btnElement) {
@@ -466,7 +422,7 @@ function renderPrograms() {
             <div class="program-info">
                 <span class="program-tag">${p.tag}</span>
                 <h3>${p.title}</h3>
-                <button class="btn-outline full-width" style="margin-top: 16px;" onclick="switchView('not-implemented')">Acessar Programa</button>
+                <button class="btn-outline full-width" style="margin-top: 16px;" onclick="switchView('not-implemented')">Acessar Grátis</button>
             </div>
         </div>
     `).join('');
