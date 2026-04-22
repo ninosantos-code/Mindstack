@@ -54,38 +54,38 @@
             </div>
             
             <nav class="nav-main">
-                <ul class="nav-list">
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Lista de programas</a></li>
-                    <li><a href="#">Página de pagamento</a></li>
-                    <li><a href="#">Participant Page</a></li>
-                    <li><a href="#">Página de visitante</a></li>
-                    <li><a href="#">Página de categoria</a></li>
-                    <li><a href="#">Loja</a></li>
-                    <li><a href="#">Página do carrinho</a></li>
-                    <li><a href="#">Página de agradecimento</a></li>
-                    <li><a href="#">Checkout</a></li>
-                    <li><a href="#">Meus programas</a></li>
-                    <li><a href="#">Notifications</a></li>
-                    <li><a href="#">Blog</a></li>
-                    <li><a href="#">Post</a></li>
-                    <li><a href="#">Meus pedidos</a></li>
-                    <li><a href="#">Eventos</a></li>
-                    <li><a href="#">Informações do evento e registro</a></li>
-                    <li><a href="#">Programação</a></li>
-                    <li><a href="#" class="active">Grupos</a></li>
-                    <li><a href="#">My Groups</a></li>
-                    <li><a href="#">Agendamento online</a></li>
-                    <li><a href="#">Calendário de agendamentos</a></li>
-                    <li><a href="#">Página de serviço</a></li>
-                    <li><a href="#">Formulário de agendamento</a></li>
-                    <li><a href="#">My Bookings</a></li>
-                    <li><a href="#">Página de portfólio</a></li>
-                    <li><a href="#">Planos e preços</a></li>
-                    <li><a href="#">Agradecimento</a></li>
-                    <li><a href="#">Personalização do plano</a></li>
-                    <li><a href="#">Paywall</a></li>
-                    <li><a href="#">Minhas assinaturas</a></li>
+                <ul class="nav-list" id="main-nav-list">
+                    <li><a href="#" data-view="home">Home</a></li>
+                    <li><a href="#" data-view="programs">Lista de programas</a></li>
+                    <li><a href="#" data-view="not-implemented">Página de pagamento</a></li>
+                    <li><a href="#" data-view="not-implemented">Participant Page</a></li>
+                    <li><a href="#" data-view="not-implemented">Página de visitante</a></li>
+                    <li><a href="#" data-view="not-implemented">Página de categoria</a></li>
+                    <li><a href="#" data-view="not-implemented">Loja</a></li>
+                    <li><a href="#" data-view="not-implemented">Página do carrinho</a></li>
+                    <li><a href="#" data-view="not-implemented">Página de agradecimento</a></li>
+                    <li><a href="#" data-view="checkout">Checkout</a></li>
+                    <li><a href="#" data-view="not-implemented">Meus programas</a></li>
+                    <li><a href="#" data-view="not-implemented">Notifications</a></li>
+                    <li><a href="#" data-view="not-implemented">Blog</a></li>
+                    <li><a href="#" data-view="not-implemented">Post</a></li>
+                    <li><a href="#" data-view="not-implemented">Meus pedidos</a></li>
+                    <li><a href="#" data-view="not-implemented">Eventos</a></li>
+                    <li><a href="#" data-view="not-implemented">Informações do evento e registro</a></li>
+                    <li><a href="#" data-view="not-implemented">Programação</a></li>
+                    <li><a href="#" data-view="groups" class="active">Grupos</a></li>
+                    <li><a href="#" data-view="not-implemented">My Groups</a></li>
+                    <li><a href="#" data-view="not-implemented">Agendamento online</a></li>
+                    <li><a href="#" data-view="not-implemented">Calendário de agendamentos</a></li>
+                    <li><a href="#" data-view="not-implemented">Página de serviço</a></li>
+                    <li><a href="#" data-view="not-implemented">Formulário de agendamento</a></li>
+                    <li><a href="#" data-view="not-implemented">My Bookings</a></li>
+                    <li><a href="#" data-view="not-implemented">Página de portfólio</a></li>
+                    <li><a href="#" data-view="not-implemented">Planos e preços</a></li>
+                    <li><a href="#" data-view="not-implemented">Agradecimento</a></li>
+                    <li><a href="#" data-view="not-implemented">Personalização do plano</a></li>
+                    <li><a href="#" data-view="not-implemented">Paywall</a></li>
+                    <li><a href="#" data-view="not-implemented">Minhas assinaturas</a></li>
                 </ul>
             </nav>
 
@@ -105,24 +105,75 @@
         </div>
     </header>
 
-    <main class="container">
-        <header class="page-header">
-            <h1>Grupos</h1>
-            <p class="subtitle">Conecte-se com pessoas incríveis e compartilhe conhecimento.</p>
-        </header>
+    <main class="container" id="main-content">
+        <!-- View: Grupos (Default) -->
+        <div id="view-groups" class="view">
+            <header class="page-header">
+                <h1>Grupos</h1>
+                <p class="subtitle">Conecte-se com pessoas incríveis e compartilhe conhecimento.</p>
+            </header>
 
-        <section class="community-layout">
-            <div class="groups-grid" id="groups-container">
-                <!-- Cards de Grupos serão inseridos via JS -->
-            </div>
-
-            <aside class="feed-sidebar">
-                <h2 class="sidebar-title">Feed Recente</h2>
-                <div class="feed-list" id="recent-feed">
-                    <!-- Posts do feed serão inseridos via JS -->
+            <section class="community-layout">
+                <div class="groups-grid" id="groups-container">
+                    <!-- Cards de Grupos serão inseridos via JS -->
                 </div>
-            </aside>
-        </section>
+
+                <aside class="feed-sidebar">
+                    <h2 class="sidebar-title">Feed Recente</h2>
+                    <div class="feed-list" id="recent-feed">
+                        <!-- Posts do feed serão inseridos via JS -->
+                    </div>
+                </aside>
+            </section>
+        </div>
+
+        <!-- View: Home -->
+        <div id="view-home" class="view hidden">
+            <section class="hero">
+                <h1>Transforme sua Mente no MindStack</h1>
+                <p>A maior plataforma de programas online e comunidades exclusivas.</p>
+                <button class="btn-primary" onclick="switchView('groups')">Explorar Grupos</button>
+            </section>
+        </div>
+
+        <!-- View: Programas -->
+        <div id="view-programs" class="view hidden">
+            <header class="page-header">
+                <h1>Nossos Programas</h1>
+                <p class="subtitle">Aprendizado acelerado com os melhores especialistas.</p>
+            </header>
+            <div class="programs-grid" id="programs-container">
+                <!-- Programas inseridos via JS -->
+            </div>
+        </div>
+
+        <!-- View: Checkout -->
+        <div id="view-checkout" class="view hidden">
+            <div class="checkout-container">
+                <div class="checkout-form">
+                    <h2>Finalizar Pagamento</h2>
+                    <form id="payment-form">
+                        <input type="text" placeholder="Nome no Cartão" required>
+                        <input type="text" placeholder="0000 0000 0000 0000" required>
+                        <div style="display:flex; gap: 10px;">
+                            <input type="text" placeholder="MM/AA" required>
+                            <input type="text" placeholder="CVV" required>
+                        </div>
+                        <button type="submit" class="btn-primary full-width">Pagar Agora</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- View: Not Implemented (Fallback) -->
+        <div id="view-not-implemented" class="view hidden">
+            <div class="fallback-content">
+                <i data-lucide="construction" style="width: 64px; height: 64px; margin-bottom: 24px; color: var(--primary);"></i>
+                <h2>Página em Construção</h2>
+                <p>Nossa equipe está trabalhando intensamente para liberar este módulo.</p>
+                <button class="btn-outline" onclick="switchView('groups')">Voltar para Grupos</button>
+            </div>
+        </div>
     </main>
 
     <footer class="footer">

@@ -316,11 +316,79 @@ function toggleJoin(groupId) {
 }
 
 // Inicialização segura para navegador
+/**
+ * Router & Navigation
+ */
+function switchView(viewId) {
+    const views = document.querySelectorAll('.view');
+    const navLinks = document.querySelectorAll('.nav-list a');
+
+    views.forEach(v => v.classList.add('hidden'));
+    document.getElementById(`view-${viewId}`)?.classList.remove('hidden');
+
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.dataset.view === viewId) link.classList.add('active');
+    });
+
+    // Ações específicas por View
+    if (viewId === 'programs') renderPrograms();
+    
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function initNavigation() {
+    const navList = document.getElementById('main-nav-list');
+    navList?.addEventListener('click', (e) => {
+        const link = e.target.closest('a');
+        if (link && link.dataset.view) {
+            e.preventDefault();
+            switchView(link.dataset.view);
+        }
+    });
+
+    // Checkout form
+    const paymentForm = document.getElementById('payment-form');
+    paymentForm?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Pagamento processado com sucesso! Bem-vindo ao programa.');
+        switchView('groups');
+    });
+}
+
+/**
+ * Funções de Programas
+ */
+const programsData = [
+    { title: "Protocolo Foco Total", tag: "Mindset", icon: "🧠" },
+    { title: "Mestre da Persuasão", tag: "Business", icon: "🤝" },
+    { title: "Código de Elite", tag: "Tech", icon: "💻" },
+    { title: "Investidor Alfa", tag: "Finanças", icon: "📈" }
+];
+
+function renderPrograms() {
+    const container = document.getElementById('programs-container');
+    if (!container) return;
+
+    container.innerHTML = programsData.map(p => `
+        <div class="program-card">
+            <div class="program-img">${p.icon}</div>
+            <div class="program-info">
+                <span class="program-tag">${p.tag}</span>
+                <h3>${p.title}</h3>
+                <button class="btn-outline full-width" style="margin-top: 16px;" onclick="switchView('checkout')">Assinar Agora</button>
+            </div>
+        </div>
+    `).join('');
+}
+
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
         render();
         initChat();
         initAuth();
+        initNavigation();
     });
 }
 
@@ -333,6 +401,7 @@ if (typeof module !== 'undefined') {
         sendMessage, 
         chatData,
         handleLogin,
-        currentUser
+        currentUser,
+        switchView
     };
 }

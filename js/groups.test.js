@@ -3,7 +3,7 @@
  * "The only way to be sure is to test with elegance."
  */
 
-const { groupsData, toggleJoin, messages, sendMessage, chatData, handleLogin, currentUser } = require('./main.js');
+const { groupsData, toggleJoin, messages, sendMessage, chatData, handleLogin, currentUser, switchView } = require('./main.js');
 
 // Configuração básica do Runner
 const styles = {
@@ -124,6 +124,14 @@ describe("Sistema de Autenticação MindStack", () => {
     test("Deve permitir chamar a função de login", () => {
         // Teste básico de existência
         expect(typeof handleLogin).toBe('function');
+    });
+
+});
+
+describe("Sistema de Navegação SPA MindStack", () => {
+    
+    test("Deve permitir a troca de visualização (switchView)", () => {
+        expect(typeof switchView).toBe('function');
     });
 
 });
