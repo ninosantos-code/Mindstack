@@ -1,18 +1,32 @@
-// Dados reais (Iniciam vazios para serem populados por usuários)
-let groupsData = JSON.parse(localStorage.getItem('mindstack_groups')) || [];
-let feedData = []; // Feed dinâmico (postagens recentes)
+import { 
+    auth, 
+    db,
+    googleProvider, 
+    githubProvider, 
+    signInWithPopup, 
+    onAuthStateChanged, 
+    signOut,
+    collection,
+    addDoc,
+    onSnapshot,
+    query,
+    orderBy,
+    serverTimestamp
+} from './firebase-config.js';
 
-// Mock de Canais do Chat (Apenas estruturas, sem mensagens)
+// Estados Globais (Reativos ao Firebase)
+let groupsData = [];
+let messages = [];
+let feedData = []; 
+
 let chatData = {
     group: [],
     direct: []
 };
 
-let messages = JSON.parse(localStorage.getItem('mindstack_messages')) || [];
-
 let activeChat = null;
 let activeTab = 'group';
-let currentUser = JSON.parse(localStorage.getItem('mindstack_user')) || null;
+let currentUser = null;
 
 /**
  * Função para criar o HTML de um card de grupo
@@ -85,26 +99,25 @@ function handleLogin(method, btnElement) {
         const originalContent = btnElement.innerHTML;
         btnElement.innerHTML = `<i data-lucide="loader-2" class="spin"></i> Entrando...`;
         if (window.lucide) window.lucide.createIcons();
-
-        setTimeout(() => {
-            currentUser = {
-                name: "Usuário MindStack",
-                email: "user@mindstack.ai",
-                method: method,
-                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${Math.random()}`
-            };
-
-            localStorage.setItem('mindstack_user', JSON.stringify(currentUser));
-            
-            // Reverte botão para estado original antes de sumir
-            btnElement.innerHTML = originalContent;
-            btnElement.style.opacity = '1';
-            btnElement.style.pointerEvents = 'auto';
-            if (window.lucide) window.lucide.createIcons();
-
-            completeLogin();
-        }, 1500);
     }
+
+    const provider = method === 'GitHub' ? githubProvider : googleProvider;
+
+    signInWithPopup(auth, provider)
+        .then((result) => {
+            console.log("Login realizado com sucesso:", result.user);
+            // completeLogin será chamado automaticamente pelo onAuthStateChanged
+        })
+        .catch((error) => {
+            console.error("Erro no login:", error);
+            alert("Falha no login: " + error.message);
+            if (btnElement) {
+                btnElement.innerHTML = originalContent;
+                btnElement.style.opacity = '1';
+                btnElement.style.pointerEvents = 'auto';
+                if (window.lucide) window.lucide.createIcons();
+            }
+        });
 }
 
 function completeLogin() {
@@ -116,20 +129,21 @@ function completeLogin() {
     // Atualiza o Header
     document.getElementById('user-profile').classList.remove('hidden');
     document.getElementById('header-cta').innerText = 'Dashboard';
-    document.getElementById('nav-avatar').src = currentUser.avatar;
+    document.getElementById('nav-avatar').src = currentUser.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser.uid}`;
 
     // Atualiza campos de settings
     const nameInput = document.getElementById('settings-name');
     const emailInput = document.getElementById('settings-email');
-    if (nameInput) nameInput.value = currentUser.name;
-    if (emailInput) emailInput.value = currentUser.email;
+    if (nameInput) nameInput.value = currentUser.displayName || '';
+    if (emailInput) emailInput.value = currentUser.email || '';
 
     render();
 }
 
 function logout() {
-    localStorage.removeItem('mindstack_user');
-    location.reload();
+    signOut(auth).then(() => {
+        location.reload();
+    });
 }
 
 /**
@@ -151,7 +165,7 @@ function saveProfile(e) {
 }
 
 /**
- * Funções de Grupos (Criação)
+ * Funções de Grupos (Criação via Firestore)
  */
 function openGroupModal() {
     document.getElementById('group-modal').classList.add('active');
@@ -161,35 +175,28 @@ function closeGroupModal() {
     document.getElementById('group-modal').classList.remove('active');
 }
 
-function createNewGroup(e) {
+async function createNewGroup(e) {
     e.preventDefault();
+    if (!currentUser) return alert("Você precisa estar logado!");
+
     const name = document.getElementById('new-group-name').value;
     const desc = document.getElementById('new-group-desc').value;
 
-    const newGroup = {
-        id: Date.now(),
-        name: name,
-        description: desc,
-        members: 1,
-        joined: true
-    };
+    try {
+        await addDoc(collection(db, "groups"), {
+            name: name,
+            description: desc,
+            members: 1,
+            createdBy: currentUser.uid,
+            createdAt: serverTimestamp()
+        });
 
-    groupsData.unshift(newGroup);
-    
-    // Salva grupos no localStorage
-    localStorage.setItem('mindstack_groups', JSON.stringify(groupsData));
-    
-    // Adiciona ao chatData para ser funcional imediatamente
-    chatData.group.push({
-        id: newGroup.id,
-        name: newGroup.name,
-        lastMsg: "Grupo criado agora",
-        time: "Agora",
-        avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${newGroup.name}`
-    });
-
-    closeGroupModal();
-    render();
+        closeGroupModal();
+        document.getElementById('new-group-form').reset();
+    } catch (error) {
+        console.error("Erro ao criar grupo:", error);
+        alert("Erro ao criar grupo no banco de dados.");
+    }
 }
 
 /**
@@ -294,14 +301,50 @@ function renderMessages() {
     container.scrollTop = container.scrollHeight;
 }
 
-function sendMessage(chatId, text) {
-    const newMsg = { chatId, text, type: 'sent' };
-    messages.push(newMsg);
-    
-    // Persiste mensagens
-    localStorage.setItem('mindstack_messages', JSON.stringify(messages));
-    
-    renderMessages();
+async function sendMessage(chatId, text) {
+    if (!currentUser) return;
+
+    try {
+        await addDoc(collection(db, "messages"), {
+            chatId: chatId,
+            text: text,
+            senderId: currentUser.uid,
+            senderName: currentUser.displayName || 'Anônimo',
+            type: 'sent',
+            timestamp: serverTimestamp()
+        });
+    } catch (error) {
+        console.error("Erro ao enviar mensagem:", error);
+    }
+}
+
+/**
+ * Inicializa os escutadores em tempo real do Firestore
+ */
+function initFirestoreListeners() {
+    // Escuta Grupos
+    const qGroups = query(collection(db, "groups"), orderBy("createdAt", "desc"));
+    onSnapshot(qGroups, (snapshot) => {
+        groupsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        // Atualiza chatData baseado nos grupos reais
+        chatData.group = groupsData.map(g => ({
+            id: g.id,
+            name: g.name,
+            lastMsg: "Conversa do grupo",
+            time: "Ativo",
+            avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${g.name}`
+        }));
+
+        render();
+    });
+
+    // Escuta Mensagens
+    const qMessages = query(collection(db, "messages"), orderBy("timestamp", "asc"));
+    onSnapshot(qMessages, (snapshot) => {
+        messages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        if (activeChat) renderMessages();
+    });
 }
 
 /**
@@ -430,15 +473,20 @@ function renderPrograms() {
 
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
-        // Verifica se já está logado
-        if (currentUser) {
-            completeLogin();
-        } else {
-            // Se não logado e não está na home, força login modal
-            document.getElementById('auth-overlay').classList.add('active');
-        }
+        // Observador de estado de autenticação do Firebase
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                completeLogin();
+            } else {
+                currentUser = null;
+                document.getElementById('auth-overlay').classList.add('active');
+            }
+        });
 
-        render();
+        // Inicializa listeners do banco de dados
+        initFirestoreListeners();
+        
         initChat();
         initAuth();
         initNavigation();
@@ -449,7 +497,15 @@ if (typeof document !== 'undefined') {
     });
 }
 
-// Export para testes
+// Expor funções para o escopo global (necessário porque agora somos um módulo)
+window.switchView = switchView;
+window.toggleJoin = toggleJoin;
+window.openGroupModal = openGroupModal;
+window.closeGroupModal = closeGroupModal;
+window.logout = logout;
+window.openChat = openChat;
+
+// Export para testes (se ambiente Node)
 if (typeof module !== 'undefined') {
     module.exports = { 
         groupsData, 
