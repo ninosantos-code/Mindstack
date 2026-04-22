@@ -130,6 +130,17 @@ async function handleLogin(method, btnElement) {
         });
 }
 
+function handleGuestLogin(btnElement) {
+    currentUser = {
+        uid: 'guest-' + Math.random().toString(36).substr(2, 9),
+        displayName: 'Visitante',
+        email: 'guest@mindstack.io',
+        photoURL: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Guest',
+        isGuest: true
+    };
+    completeLogin();
+}
+
 function completeLogin() {
     if (!currentUser) return;
 
@@ -188,8 +199,11 @@ function closeGroupModal() {
 async function createNewGroup(e) {
     e.preventDefault();
     if (!currentUser) return alert("Você precisa estar logado!");
-
-    const name = document.getElementById('new-group-name').value;
+    
+    if (currentUser.isGuest) {
+        alert("Convidados podem apenas visualizar conteúdo. Crie uma conta para criar seus próprios grupos!");
+        return;
+    }
     const desc = document.getElementById('new-group-desc').value;
 
     try {
@@ -314,7 +328,10 @@ function renderMessages() {
 async function sendMessage(chatId, text) {
     if (!currentUser) return;
 
-    try {
+    if (currentUser.isGuest) {
+        alert("Atenção: Visitantes podem ler mensagens, mas precisam de uma conta para participar da conversa.");
+        return;
+    }
         await addDoc(collection(db, "messages"), {
             chatId: chatId,
             text: text,
@@ -514,6 +531,7 @@ window.openGroupModal = openGroupModal;
 window.closeGroupModal = closeGroupModal;
 window.logout = logout;
 window.openChat = openChat;
+window.handleGuestLogin = handleGuestLogin;
 
 // Export para testes (se ambiente Node)
 if (typeof module !== 'undefined') {
