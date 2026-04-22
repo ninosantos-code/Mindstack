@@ -490,6 +490,26 @@ function renderPrograms() {
     `).join('');
 }
 
+/**
+ * Renderiza o reCAPTCHA manualmente (necessário para SPA e modais dinâmicos)
+ */
+function renderRecaptcha() {
+    if (typeof grecaptcha !== 'undefined' && document.getElementById('recaptcha-container')) {
+        try {
+            grecaptcha.render('recaptcha-container', {
+                'sitekey': '6Le33cQsAAAAAOa5ql5PAYzHfRjTt9c6KFdGwa46',
+                'theme': 'light'
+            });
+        } catch (error) {
+            // Provavelmente já renderizado
+            console.warn("reCAPTCHA já inicializado ou erro na renderização.");
+        }
+    } else {
+        // Tenta novamente em 1 segundo caso o script ainda esteja carregando
+        setTimeout(renderRecaptcha, 1000);
+    }
+}
+
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
         // Observador de estado de autenticação do Firebase
@@ -500,6 +520,8 @@ if (typeof document !== 'undefined') {
             } else {
                 currentUser = null;
                 document.getElementById('auth-overlay').classList.add('active');
+                // Tenta renderizar o reCAPTCHA quando o modal abre
+                renderRecaptcha();
             }
         });
 
