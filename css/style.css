@@ -1063,3 +1063,20 @@ a {
 #group-modal .auth-modal {
     max-width: 500px;
 }
+/* Animações de Carregamento */
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.btn-auth i, .btn-auth img {
+    transition: transform 0.3s;
+}
+
+.btn-auth:hover i, .btn-auth:hover img {
+    transform: scale(1.1);
+}

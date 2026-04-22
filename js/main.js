@@ -80,28 +80,31 @@ function initAuth() {
 
 function handleLogin(method, btnElement) {
     if (btnElement) {
-        btnElement.style.opacity = '0.5';
+        btnElement.style.opacity = '0.6';
         btnElement.style.pointerEvents = 'none';
-        btnElement.innerHTML = `Entrando...`;
-    }
+        const originalContent = btnElement.innerHTML;
+        btnElement.innerHTML = `<i data-lucide="loader-2" class="spin"></i> Entrando...`;
+        if (window.lucide) window.lucide.createIcons();
 
-    setTimeout(() => {
-        currentUser = {
-            name: "Usuário MindStack",
-            email: "user@mindstack.ai",
-            method: method,
-            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${Math.random()}`
-        };
+        setTimeout(() => {
+            currentUser = {
+                name: "Usuário MindStack",
+                email: "user@mindstack.ai",
+                method: method,
+                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${Math.random()}`
+            };
 
-        localStorage.setItem('mindstack_user', JSON.stringify(currentUser));
-        completeLogin();
-        
-        // Reset botão se necessário (embora o modal suma)
-        if (btnElement) {
+            localStorage.setItem('mindstack_user', JSON.stringify(currentUser));
+            
+            // Reverte botão para estado original antes de sumir
+            btnElement.innerHTML = originalContent;
             btnElement.style.opacity = '1';
             btnElement.style.pointerEvents = 'auto';
-        }
-    }, 1200);
+            if (window.lucide) window.lucide.createIcons();
+
+            completeLogin();
+        }, 1500);
+    }
 }
 
 function completeLogin() {
