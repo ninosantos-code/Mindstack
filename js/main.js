@@ -60,23 +60,31 @@ function initAuth() {
     const emailForm = document.getElementById('login-email-form');
     const headerCta = document.getElementById('header-cta');
 
-    googleBtn?.addEventListener('click', () => handleLogin('Google'));
-    githubBtn?.addEventListener('click', () => handleLogin('GitHub'));
+    googleBtn?.addEventListener('click', () => handleLogin('Google', googleBtn));
+    githubBtn?.addEventListener('click', () => handleLogin('GitHub', githubBtn));
     emailForm?.addEventListener('submit', (e) => {
         e.preventDefault();
-        handleLogin('E-mail');
+        const submitBtn = emailForm.querySelector('button');
+        handleLogin('E-mail', submitBtn);
     });
 
     headerCta?.addEventListener('click', () => {
         if (!currentUser) {
             document.getElementById('auth-overlay').classList.add('active');
+        } else {
+            // Se logado, o CTA pode levar para uma view específica
+            switchView('groups');
         }
     });
 }
 
-function handleLogin(method) {
-    console.log(`Logando com ${method}...`);
-    
+function handleLogin(method, btnElement) {
+    if (btnElement) {
+        btnElement.style.opacity = '0.5';
+        btnElement.style.pointerEvents = 'none';
+        btnElement.innerHTML = `Entrando...`;
+    }
+
     setTimeout(() => {
         currentUser = {
             name: "Usuário MindStack",
@@ -85,10 +93,15 @@ function handleLogin(method) {
             avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${Math.random()}`
         };
 
-        // Persiste no localStorage
         localStorage.setItem('mindstack_user', JSON.stringify(currentUser));
         completeLogin();
-    }, 800);
+        
+        // Reset botão se necessário (embora o modal suma)
+        if (btnElement) {
+            btnElement.style.opacity = '1';
+            btnElement.style.pointerEvents = 'auto';
+        }
+    }, 1200);
 }
 
 function completeLogin() {

@@ -13,7 +13,7 @@
 </head>
 <body>
     <!-- Login Modal/Overlay -->
-    <div class="auth-overlay active" id="auth-overlay">
+    <div class="auth-overlay" id="auth-overlay">
         <div class="auth-modal">
             <div class="auth-header">
                 <span class="logo-text">MindStack</span>
@@ -95,7 +95,8 @@
                     <i data-lucide="shopping-cart"></i>
                     <span>Carrinho</span>
                 </div>
-                <div class="user-profile hidden" id="user-profile">
+                <div class="user-profile hidden" id="user-profile" style="display: flex; align-items: center; gap: 12px;">
+                    <button onclick="logout()" class="btn-text" style="font-size: 12px; color: var(--text-secondary); cursor: pointer;">Sair</button>
                     <div class="user-avatar" onclick="switchView('settings')" style="cursor: pointer;">
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Avatar" id="nav-avatar">
                         <div class="status-indicator"></div>
