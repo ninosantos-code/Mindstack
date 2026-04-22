@@ -88,6 +88,7 @@ let messages = [
 
 let activeChat = null;
 let activeTab = 'group';
+let currentUser = null;
 
 /**
  * Função para criar o HTML de um card de grupo
@@ -124,6 +125,60 @@ function createFeedItem(post) {
             <div class="feed-time">${post.time}</div>
         </div>
     `;
+}
+
+/**
+ * Funções de Autenticação
+ */
+function initAuth() {
+    const googleBtn = document.getElementById('login-google');
+    const githubBtn = document.getElementById('login-github');
+    const emailForm = document.getElementById('login-email-form');
+    const headerCta = document.getElementById('header-cta');
+
+    googleBtn?.addEventListener('click', () => handleLogin('Google'));
+    githubBtn?.addEventListener('click', () => handleLogin('GitHub'));
+    emailForm?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        handleLogin('E-mail');
+    });
+
+    headerCta?.addEventListener('click', () => {
+        if (!currentUser) {
+            document.getElementById('auth-overlay').classList.add('active');
+        }
+    });
+}
+
+function handleLogin(method) {
+    console.log(`Logando com ${method}...`);
+    
+    // Simulação de delay de rede
+    const btn = event?.currentTarget;
+    if (btn) btn.style.opacity = '0.5';
+
+    setTimeout(() => {
+        currentUser = {
+            name: "Diogo Santos",
+            email: "diogo@mindstack.ai",
+            method: method,
+            avatar: method === 'GitHub' ? "https://github.com/ninosantos-code.png" : "https://api.dicebear.com/7.x/avataaars/svg?seed=Diogo"
+        };
+
+        completeLogin();
+    }, 1000);
+}
+
+function completeLogin() {
+    // Esconde o modal
+    document.getElementById('auth-overlay').classList.remove('active');
+    
+    // Atualiza o Header
+    document.getElementById('user-profile').classList.remove('hidden');
+    document.getElementById('header-cta').innerText = 'Dashboard';
+    document.getElementById('nav-avatar').src = currentUser.avatar;
+
+    alert(`Bem-vindo, ${currentUser.name}! Autenticado via ${currentUser.method}.`);
 }
 
 /**
@@ -265,10 +320,19 @@ if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
         render();
         initChat();
+        initAuth();
     });
 }
 
 // Export para testes
 if (typeof module !== 'undefined') {
-    module.exports = { groupsData, toggleJoin, messages, sendMessage, chatData };
+    module.exports = { 
+        groupsData, 
+        toggleJoin, 
+        messages, 
+        sendMessage, 
+        chatData,
+        handleLogin,
+        currentUser
+    };
 }

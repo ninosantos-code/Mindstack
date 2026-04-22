@@ -3,7 +3,7 @@
  * "The only way to be sure is to test with elegance."
  */
 
-const { groupsData, toggleJoin, messages, sendMessage, chatData } = require('./main.js');
+const { groupsData, toggleJoin, messages, sendMessage, chatData, handleLogin, currentUser } = require('./main.js');
 
 // Configuração básica do Runner
 const styles = {
@@ -110,6 +110,20 @@ describe("Sistema de Chat MindStack", () => {
         const lastMsg = messages[messages.length - 1];
         expect(lastMsg.text).toBe("Teste de mensagem premium");
         expect(lastMsg.type).toBe("sent");
+    });
+
+});
+
+describe("Sistema de Autenticação MindStack", () => {
+    
+    test("Deve iniciar com estado neutro (sem usuário)", () => {
+        const { currentUser } = require('./main.js');
+        expect(currentUser).toBe(null);
+    });
+
+    test("Deve permitir chamar a função de login", () => {
+        // Teste básico de existência
+        expect(typeof handleLogin).toBe('function');
     });
 
 });

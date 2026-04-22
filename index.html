@@ -12,6 +12,41 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
+    <!-- Login Modal/Overlay -->
+    <div class="auth-overlay active" id="auth-overlay">
+        <div class="auth-modal">
+            <div class="auth-header">
+                <span class="logo-text">MindStack</span>
+                <h2>Bem-vindo à Comunidade</h2>
+                <p>Escolha uma forma de acessar sua conta e começar sua jornada.</p>
+            </div>
+            
+            <div class="auth-options">
+                <button class="btn-auth google" id="login-google">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                    Entrar com Google
+                </button>
+                <button class="btn-auth github" id="login-github">
+                    <i data-lucide="github"></i>
+                    Entrar com GitHub
+                </button>
+            </div>
+
+            <div class="auth-divider">
+                <span>ou continue com</span>
+            </div>
+
+            <form class="auth-form" id="login-email-form">
+                <input type="email" placeholder="Seu melhor e-mail" required>
+                <button type="submit" class="btn-primary full-width">Continuar com E-mail</button>
+            </form>
+
+            <footer class="auth-footer">
+                <p>Ao entrar, você concorda com nossos <a href="#">Termos de Uso</a> e <a href="#">Privacidade</a>.</p>
+            </footer>
+        </div>
+    </div>
+
     <header class="header">
         <div class="header-container">
             <div class="logo">
@@ -59,11 +94,13 @@
                     <i data-lucide="shopping-cart"></i>
                     <span>Carrinho</span>
                 </div>
-                <div class="user-avatar">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Avatar do Usuário">
-                    <div class="status-indicator"></div>
+                <div class="user-profile hidden" id="user-profile">
+                    <div class="user-avatar">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Avatar" id="nav-avatar">
+                        <div class="status-indicator"></div>
+                    </div>
                 </div>
-                <button class="btn-primary">Começar Agora</button>
+                <button class="btn-primary" id="header-cta">Começar Agora</button>
             </div>
         </div>
     </header>
