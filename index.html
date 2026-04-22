@@ -101,6 +101,54 @@
         </div>
     </footer>
 
+    <!-- Floating Chat Widget -->
+    <div class="chat-widget" id="chat-widget">
+        <button class="chat-toggle" id="chat-toggle">
+            <i data-lucide="message-square"></i>
+            <span class="chat-badge" id="chat-badge">3</span>
+        </button>
+
+        <div class="chat-panel" id="chat-panel">
+            <header class="chat-header">
+                <div class="chat-header-info">
+                    <h3>Chat MindStack</h3>
+                    <p id="chat-status">3 contatos online</p>
+                </div>
+                <button class="chat-close" id="chat-close">
+                    <i data-lucide="x"></i>
+                </button>
+            </header>
+
+            <div class="chat-tabs">
+                <button class="chat-tab active" data-tab="group">Grupos</button>
+                <button class="chat-tab" data-tab="direct">Individuais</button>
+            </div>
+
+            <div class="chat-body">
+                <div class="chat-list" id="chat-list">
+                    <!-- Lista de conversas/canais -->
+                </div>
+                <div class="chat-messages-container hidden" id="chat-messages-container">
+                    <button class="back-to-list" id="back-to-list">
+                        <i data-lucide="chevron-left"></i> Voltar
+                    </button>
+                    <div class="chat-active-info">
+                        <span id="active-chat-name">Nome do Grupo</span>
+                    </div>
+                    <div class="chat-messages" id="chat-messages">
+                        <!-- Mensagens serão inseridas aqui -->
+                    </div>
+                    <form class="chat-input-area" id="chat-form">
+                        <input type="text" placeholder="Digite uma mensagem..." id="chat-input" autocomplete="off">
+                        <button type="submit">
+                            <i data-lucide="send"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="js/main.js"></script>
     <script>
         lucide.createIcons();

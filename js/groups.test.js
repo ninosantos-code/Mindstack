@@ -3,7 +3,7 @@
  * "The only way to be sure is to test with elegance."
  */
 
-const { groupsData, toggleJoin } = require('./main.js');
+const { groupsData, toggleJoin, messages, sendMessage, chatData } = require('./main.js');
 
 // Configuração básica do Runner
 const styles = {
@@ -90,6 +90,26 @@ describe("Comunidade MindStack: Lógica de Grupos", () => {
         
         const groupAfter = groupsData.find(g => g.id === groupId);
         expect(groupAfter.members).toBe(initialMembers);
+    });
+});
+
+describe("Sistema de Chat MindStack", () => {
+    
+    test("Deve carregar canais de grupo e individuais", () => {
+        expect(chatData.group.length).toBe(2);
+        expect(chatData.direct.length).toBe(2);
+    });
+
+    test("Deve permitir o envio de mensagens", () => {
+        const initialCount = messages.filter(m => m.chatId === 201).length;
+        sendMessage(201, "Teste de mensagem premium");
+        
+        const afterCount = messages.filter(m => m.chatId === 201).length;
+        expect(afterCount).toBe(initialCount + 1);
+        
+        const lastMsg = messages[messages.length - 1];
+        expect(lastMsg.text).toBe("Teste de mensagem premium");
+        expect(lastMsg.type).toBe("sent");
     });
 
 });
