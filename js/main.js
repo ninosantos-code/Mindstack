@@ -114,12 +114,22 @@ function handleLogin(method, btnElement) {
 
     signInWithPopup(auth, provider)
         .then((result) => {
-            console.log("Login realizado com sucesso:", result.user);
-            // completeLogin será chamado automaticamente pelo onAuthStateChanged
+            console.log("Login realizado com sucesso:", result.user.email);
         })
         .catch((error) => {
-            console.error("Erro no login:", error);
-            alert("Falha no login: " + error.message);
+            console.error("Erro detalhado no login:", error.code, error.message);
+            
+            let userMessage = "Falha no login.";
+            if (error.code === 'auth/configuration-not-found') {
+                userMessage = "Configuração do Firebase não encontrada. Verifique se o login do Google está ativado no Console.";
+            } else if (error.code === 'auth/popup-closed-by-user') {
+                userMessage = "O login foi cancelado (janela fechada).";
+            } else if (error.code === 'auth/unauthorized-domain') {
+                userMessage = "Este domínio não está autorizado no Firebase Console.";
+            }
+
+            alert(userMessage + " (" + error.code + ")");
+            
             if (btnElement) {
                 btnElement.innerHTML = originalContent;
                 btnElement.style.opacity = '1';

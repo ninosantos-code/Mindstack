@@ -11,8 +11,6 @@ import {
     serverTimestamp,
     limit 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app-check.js";
-
 // Sua configuração do Firebase (copiada do seu post)
 const firebaseConfig = {
   apiKey: "AIzaSyCvxG7micwjo6qSr79PEgsHASm-aBMGRpg",
@@ -28,12 +26,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-
-// Ativa App Check com reCAPTCHA
-const appCheck = initializeAppCheck(app, {
-  provider: new ReCaptchaV3Provider('6Le33cQsAAAAAOa5ql5PAYzHfRjTt9c6KFdGwa46'),
-  isTokenAutoRefreshEnabled: true
-});
 
 // Provedores
 const googleProvider = new GoogleAuthProvider();
