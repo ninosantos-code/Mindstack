@@ -535,6 +535,15 @@ if (typeof document !== 'undefined') {
         initAuth();
         initNavigation();
 
+        // Diagnóstico reCAPTCHA
+        setTimeout(() => {
+            if (typeof grecaptcha !== 'undefined') {
+                console.log("✅ reCAPTCHA Biblioteca carregada.");
+            } else {
+                console.warn("❌ reCAPTCHA Biblioteca NÃO carregada ainda.");
+            }
+        }, 2000);
+
         // Novos Listeners
         document.getElementById('profile-form')?.addEventListener('submit', saveProfile);
         document.getElementById('new-group-form')?.addEventListener('submit', createNewGroup);
