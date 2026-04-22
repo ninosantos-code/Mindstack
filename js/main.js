@@ -93,23 +93,6 @@ function initAuth() {
 }
 
 async function handleLogin(method, btnElement) {
-    // Validação de reCAPTCHA v3 para E-mail
-    if (method === 'E-mail') {
-        try {
-            if (typeof grecaptcha !== 'undefined') {
-                const token = await new Promise((resolve) => {
-                    grecaptcha.ready(() => {
-                        grecaptcha.execute('6Le33cQsAAAAAOa5ql5PAYzHfRjTt9c6KFdGwa46', {action: 'login'}).then(resolve);
-                    });
-                });
-                console.log("Token reCAPTCHA v3 gerado com sucesso.");
-            }
-        } catch (error) {
-            console.error("Erro no reCAPTCHA:", error);
-            return alert("Falha na verificação de segurança.");
-        }
-    }
-
     if (btnElement) {
         btnElement.style.opacity = '0.6';
         btnElement.style.pointerEvents = 'none';
