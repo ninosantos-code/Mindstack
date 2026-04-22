@@ -96,7 +96,7 @@
                     <span>Carrinho</span>
                 </div>
                 <div class="user-profile hidden" id="user-profile">
-                    <div class="user-avatar">
+                    <div class="user-avatar" onclick="switchView('settings')" style="cursor: pointer;">
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Avatar" id="nav-avatar">
                         <div class="status-indicator"></div>
                     </div>
@@ -109,9 +109,15 @@
     <main class="container" id="main-content">
         <!-- View: Grupos (Default) -->
         <div id="view-groups" class="view">
-            <header class="page-header">
-                <h1>Grupos</h1>
-                <p class="subtitle">Conecte-se com pessoas incríveis e compartilhe conhecimento.</p>
+            <header class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <h1>Grupos</h1>
+                    <p class="subtitle">Conecte-se com pessoas incríveis e compartilhe conhecimento.</p>
+                </div>
+                <button class="btn-primary" onclick="openGroupModal()">
+                    <i data-lucide="plus-circle" style="width: 18px; margin-right: 8px;"></i>
+                    Novo Grupo
+                </button>
             </header>
 
             <section class="community-layout">
@@ -162,6 +168,51 @@
                         </div>
                         <button type="submit" class="btn-primary full-width">Pagar Agora</button>
                     </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- View: Settings -->
+        <div id="view-settings" class="view hidden">
+            <header class="page-header">
+                <h1>Configurações de Perfil</h1>
+                <p class="subtitle">Personalize sua experiência no MindStack.</p>
+            </header>
+            <div class="settings-grid">
+                <div class="settings-card">
+                    <h3>Dados Pessoais</h3>
+                    <form id="profile-form" class="auth-form" style="margin-top: 20px;">
+                        <div class="form-group">
+                            <label>Nome Completo</label>
+                            <input type="text" id="settings-name" placeholder="Seu nome" value="Diogo Santos">
+                        </div>
+                        <div class="form-group">
+                            <label>E-mail</label>
+                            <input type="email" id="settings-email" placeholder="seu@email.com" value="diogo@mindstack.ai">
+                        </div>
+                        <div class="form-group">
+                            <label>Biografia</label>
+                            <textarea id="settings-bio" placeholder="Conte um pouco sobre você..." style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); height: 100px; margin-bottom: 20px;"></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">Salvar Alterações</button>
+                    </form>
+                </div>
+                <div class="settings-card">
+                    <h3>Preferências</h3>
+                    <div class="settings-list" style="margin-top: 20px;">
+                        <div class="setting-item">
+                            <span>Notificações por E-mail</span>
+                            <input type="checkbox" checked>
+                        </div>
+                        <div class="setting-item">
+                            <span>Modo Noturno</span>
+                            <input type="checkbox">
+                        </div>
+                        <div class="setting-item">
+                            <span>Perfil Público</span>
+                            <input type="checkbox" checked>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -234,6 +285,11 @@
                         <!-- Mensagens serão inseridas aqui -->
                     </div>
                     <form class="chat-input-area" id="chat-form">
+                        <div class="chat-input-tools">
+                            <button type="button" class="tool-btn"><i data-lucide="smile"></i></button>
+                            <button type="button" class="tool-btn"><i data-lucide="image"></i></button>
+                            <button type="button" class="tool-btn"><i data-lucide="paperclip"></i></button>
+                        </div>
                         <input type="text" placeholder="Digite uma mensagem..." id="chat-input" autocomplete="off">
                         <button type="submit">
                             <i data-lucide="send"></i>
@@ -241,6 +297,24 @@
                     </form>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal: Criar Grupo -->
+    <div class="auth-overlay" id="group-modal">
+        <div class="auth-modal">
+            <div class="auth-header">
+                <h2>Crie sua Comunidade</h2>
+                <p>Dê um nome e descreva o propósito do seu novo grupo.</p>
+            </div>
+            <form id="new-group-form" class="auth-form">
+                <input type="text" id="new-group-name" placeholder="Nome do Grupo" required>
+                <textarea id="new-group-desc" placeholder="Descrição curta..." style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); height: 80px; margin-bottom: 20px;" required></textarea>
+                <div style="display: flex; gap: 12px;">
+                    <button type="button" class="btn-outline full-width" onclick="closeGroupModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary full-width">Criar Grupo</button>
+                </div>
+            </form>
         </div>
     </div>
 

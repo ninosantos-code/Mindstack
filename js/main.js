@@ -178,7 +178,61 @@ function completeLogin() {
     document.getElementById('header-cta').innerText = 'Dashboard';
     document.getElementById('nav-avatar').src = currentUser.avatar;
 
+    // Atualiza campos de settings com dados do usuário
+    const nameInput = document.getElementById('settings-name');
+    const emailInput = document.getElementById('settings-email');
+    if (nameInput) nameInput.value = currentUser.name;
+    if (emailInput) emailInput.value = currentUser.email;
+
     alert(`Bem-vindo, ${currentUser.name}! Autenticado via ${currentUser.method}.`);
+}
+
+/**
+ * Funções de Perfil & Configurações
+ */
+function saveProfile(e) {
+    e.preventDefault();
+    const name = document.getElementById('settings-name').value;
+    const email = document.getElementById('settings-email').value;
+
+    if (currentUser) {
+        currentUser.name = name;
+        currentUser.email = email;
+        
+        // Atualiza UI global
+        document.getElementById('nav-avatar').src = currentUser.avatar;
+        alert("Perfil atualizado com sucesso!");
+    }
+}
+
+/**
+ * Funções de Grupos (Criação)
+ */
+function openGroupModal() {
+    document.getElementById('group-modal').classList.add('active');
+}
+
+function closeGroupModal() {
+    document.getElementById('group-modal').classList.remove('active');
+}
+
+function createNewGroup(e) {
+    e.preventDefault();
+    const name = document.getElementById('new-group-name').value;
+    const desc = document.getElementById('new-group-desc').value;
+
+    const newGroup = {
+        id: groupsData.length + 1,
+        name: name,
+        description: desc,
+        members: 1,
+        joined: true
+    };
+
+    groupsData.unshift(newGroup); // Adiciona no início
+    closeGroupModal();
+    render();
+    alert(`Grupo "${name}" criado com sucesso!`);
 }
 
 /**
@@ -212,12 +266,31 @@ function initChat() {
         e.preventDefault();
         const input = document.getElementById('chat-input');
         if (input.value.trim() && activeChat) {
-            sendMessage(activeChat.id, input.value);
+            const text = input.value;
+            // Efeito divertido: se começar com /gif, simula imagem
+            if (text.startsWith('/gif')) {
+                sendSpecialMessage(activeChat.id, 'gif');
+            } else {
+                sendMessage(activeChat.id, text);
+            }
             input.value = '';
         }
     });
 
     renderChatList();
+}
+
+function sendSpecialMessage(chatId, type) {
+    if (type === 'gif') {
+        const gifUrl = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJueW94bmR6Z3R6Z3R6Z3R6Z3R6Z3R6Z3R6Z3R6Z3R6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/3o7TKSjPPrTVf997JS/giphy.gif";
+        messages.push({ 
+            chatId, 
+            text: `<img src="${gifUrl}" style="width: 100%; border-radius: 8px; margin-top: 5px;">`, 
+            type: 'sent',
+            isRich: true
+        });
+    }
+    renderMessages();
 }
 
 function renderChatList() {
@@ -254,7 +327,12 @@ function renderMessages() {
 
     const chatMessages = messages.filter(m => m.chatId === activeChat.id);
     container.innerHTML = chatMessages.map(m => `
-        <div class="message ${m.type}">${m.text}</div>
+        <div class="message ${m.type}">
+            ${m.text}
+            <div style="font-size: 10px; opacity: 0.5; margin-top: 4px; text-align: right;">
+                ${m.type === 'sent' ? '✓✓ Visualizado' : ''}
+            </div>
+        </div>
     `).join('');
     container.scrollTop = container.scrollHeight;
 }
@@ -389,6 +467,10 @@ if (typeof document !== 'undefined') {
         initChat();
         initAuth();
         initNavigation();
+
+        // Novos Listeners
+        document.getElementById('profile-form')?.addEventListener('submit', saveProfile);
+        document.getElementById('new-group-form')?.addEventListener('submit', createNewGroup);
     });
 }
 
@@ -402,6 +484,8 @@ if (typeof module !== 'undefined') {
         chatData,
         handleLogin,
         currentUser,
-        switchView
+        switchView,
+        createNewGroup,
+        saveProfile
     };
 }
