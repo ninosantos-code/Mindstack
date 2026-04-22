@@ -93,6 +93,15 @@ function initAuth() {
 }
 
 function handleLogin(method, btnElement) {
+    // Validação de reCAPTCHA para E-mail
+    if (method === 'E-mail') {
+        const recaptchaResponse = typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : null;
+        if (!recaptchaResponse) {
+            alert("Por favor, complete a verificação do reCAPTCHA.");
+            return;
+        }
+    }
+
     if (btnElement) {
         btnElement.style.opacity = '0.6';
         btnElement.style.pointerEvents = 'none';
