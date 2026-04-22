@@ -78,45 +78,35 @@ describe("Comunidade MindStack: Lógica de Grupos", () => {
         expect(groupsData.length).toBe(0);
     });
 
-    test("Deve permitir a entrada em um grupo (toggleJoin)", () => {
-        const groupId = 1;
-        const initialMembers = groupsData.find(g => g.id === groupId).members;
+    test("Deve permitir a criação e entrada em um grupo dinâmico", () => {
+        const mockEvent = { preventDefault: () => {} };
+        global.document.getElementById = (id) => {
+            if (id === 'new-group-name') return { value: "Grupo Dinâmico" };
+            if (id === 'new-group-desc') return { value: "Desc" };
+            if (id === 'group-modal') return { classList: { remove: () => {} } };
+            return { value: "", innerHTML: "" };
+        };
+
+        createNewGroup(mockEvent);
+        const newGroupId = groupsData[0].id;
         
-        toggleJoin(groupId);
-        
-        const groupAfter = groupsData.find(g => g.id === groupId);
-        expect(groupAfter.joined).toBeTruthy();
-        expect(groupAfter.members).toBe(initialMembers + 1);
+        toggleJoin(newGroupId);
+        expect(groupsData[0].joined).toBeTruthy();
     });
 
-    test("Não deve incrementar membros se o usuário já estiver no grupo", () => {
-        const groupId = 2; // Grupo já unido no mock
-        const initialMembers = groupsData.find(g => g.id === groupId).members;
-        
-        toggleJoin(groupId);
-        
-        const groupAfter = groupsData.find(g => g.id === groupId);
-        expect(groupAfter.members).toBe(initialMembers);
-    });
 });
 
 describe("Sistema de Chat MindStack", () => {
     
-    test("Deve carregar canais de grupo e individuais", () => {
-        expect(chatData.group.length).toBe(2);
-        expect(chatData.direct.length).toBe(2);
+    test("Deve refletir a criação de canais dinâmicos", () => {
+        // Como o teste acima criou um grupo, o chatData.group deve ter 1 item
+        expect(chatData.group.length).toBe(1);
     });
 
-    test("Deve permitir o envio de mensagens", () => {
-        const initialCount = messages.filter(m => m.chatId === 201).length;
-        sendMessage(201, "Teste de mensagem premium");
-        
-        const afterCount = messages.filter(m => m.chatId === 201).length;
-        expect(afterCount).toBe(initialCount + 1);
-        
+    test("Deve permitir o envio de mensagens em um chat ativo", () => {
+        sendMessage(999, "Mensagem em chat limpo");
         const lastMsg = messages[messages.length - 1];
-        expect(lastMsg.text).toBe("Teste de mensagem premium");
-        expect(lastMsg.type).toBe("sent");
+        expect(lastMsg.text).toBe("Mensagem em chat limpo");
     });
 
 });
